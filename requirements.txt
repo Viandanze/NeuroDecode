@@ -1,22 +1,25 @@
 # --- Core signal processing / decoding ---
-
-mne>=1.0.0
-pyriemann>=0.3.0
-braindecode>=0.8.0
-torch>=2.0.0
-numpy>=1.21.0
-scipy>=1.7.0
-scikit-learn>=1.0.0
-matplotlib>=3.5.0
+# Compatible-release pins (~=) match the environment the lr412 benchmark
+# was verified with (see README, "Standard 2-class MI Benchmark").
+mne~=1.12          # benchmark env: 1.12.1
+pyriemann~=0.11    # benchmark env: 0.11
+numpy~=2.0         # benchmark env: 2.0.1
+scipy~=1.15        # benchmark env: 1.15.2
+scikit-learn~=1.7  # benchmark env: 1.7.2
+matplotlib>=3.6    # visualizer uses the 'seaborn-v0_8' style (needs >= 3.6)
 pyyaml>=6.0
-tqdm>=4.0.0
+tqdm>=4.0
+joblib>=1.4        # directly imported by src/training/ensemble.py
+
+torch>=2.0.0       # benchmark verified on 2.5.1 + CUDA 12.1; CI installs its own CPU wheel
 
 # --- Collaborative reasoning demo (web feedback + synthetic board) ---
 flask>=3.0
-brainflow>=5.2
+brainflow>=5.2     # hardware acquisition; lazy-imported with ImportError fallback
 requests>=2.28
 
-# Optional but recommended
-# pyedflib>=0.1.30  # For EDF file reading
-# seaborn>=0.11.0  # For visualization
-
+# Notes:
+# - braindecode was removed: it was listed here but never imported anywhere
+#   in src/, scripts/, or tests/ (all deep models are implemented in-repo).
+# - Tests: pip install pytest  (CI installs it separately; see
+#   .github/workflows/tests.yml).
