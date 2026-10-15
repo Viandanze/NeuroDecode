@@ -51,3 +51,12 @@ Thumbs.db
 # Environment / secrets
 .env
 .coverage
+
+# Local data / artifacts / backups
+data/
+outputs/
+backup_*/
+bci_proj/
+*.pt
+*.bak
+*.part
