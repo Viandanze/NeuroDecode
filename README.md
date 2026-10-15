@@ -33,6 +33,36 @@ This project provides complete implementations of:
 | **Ensemble Stacking(tangent)** | **train/test split** | **82.14%** | **Cohen's Kappa 0.537** |
 | Riemannian MDM | single subject | 73.63% | |
 
+### Standard 2-class MI Benchmark (MNE decoding recipe)
+
+Left vs. right hand motor imagery, within-subject stratified 5-fold CV on subjects S001-S010
+(PhysioNet eegmmidb, 64 ch, 160 Hz). Preprocessing follows the standard MNE recipe:
+runs 4/8/12 (45 trials/subject) -> 8-30 Hz firwin bandpass -> common average reference
+-> 0.5-3.0 s epochs (401 samples) -> per-epoch per-channel z-score.
+
+| Model | Grand Mean Acc | Std | Best Subject |
+|-------|---------------|-----|--------------|
+| ShallowConvNet | 69.3% | 8.5% | 91.1% (S002) |
+| EEGConformer | 69.1% | 5.8% | 80.0% (S003) |
+| EEGNet | 60.4% | 6.9% | 73.3% (S001) |
+| Riemannian (tangent space) | 60.2% | 16.0% | 84.4% (S002, S007) |
+| CSP + LDA | 58.2% | 12.6% | 82.2% (S002) |
+
+Cross-subject std reflects the well-known inter-subject variability of MI; the 69.3%
+ShallowConvNet grand mean is in line with published results on this dataset
+(Schirrmeister et al. 2017). Deep models train per-fold with AdamW + cosine schedule
+and early stopping; no cross-subject transfer is used. EEGConformer uses batch_size=8
+on an 8 GB consumer GPU (RTX 4070).
+
+Reproduce:
+
+```
+python scripts/benchmark_lr.py --paradigm lr412 --subjects 1 2 3 4 5 6 7 8 9 10 --models csp riemann eegnet shallow
+```
+
+Results are written to `outputs/benchmark_lr_<ts>/` (JSON + Markdown).
+Data: `python scripts/download_eegbci.py` (S3 mirror, atomic `.part` rename).
+
 ##  System Architecture
 
 ```mermaid
