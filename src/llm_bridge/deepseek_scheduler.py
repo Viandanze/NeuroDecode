@@ -16,8 +16,6 @@ from typing import Callable, Optional
 
 from .llm_client import APIClient
 
-logger = __import__("logging").getLogger(__name__)
-
 # Peak pricing windows as (start_hour, end_hour), end-exclusive, local time.
 # DeepSeek peak windows: 09:00-12:00 and 14:00-18:00 (Beijing time).
 PEAK_WINDOWS: tuple[tuple[int, int], ...] = ((9, 12), (14, 18))
