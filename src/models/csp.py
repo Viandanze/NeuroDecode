@@ -118,8 +118,8 @@ class CSPFeatures:
             
             # Select top n_components and bottom n_components
             filters = np.vstack([
-                eigvecs_csp[:, :self.n_components],  # Top (max variance for class 0)
-                eigvecs_csp[:, -self.n_components:],  # Bottom (min variance for class 0)
+                eigvecs_csp[:, :self.n_components].T,   # (n_components, n_ch)
+                eigvecs_csp[:, -self.n_components:].T,  # (n_components, n_ch)
             ])
             
             self.filters_ = filters

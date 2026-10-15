@@ -640,7 +640,7 @@ class EEGConformer(nn.Module):
         x, n_patches = self.patch_embed(x)
         
         # Reshape for processing: (B*C, n_patches, embed_dim) -> (B, C*n_patches, embed_dim)
-        x = x.view(batch, channels * n_patches, self.embed_dim)
+        x = x.reshape(batch, channels * n_patches, self.embed_dim)  # reshape: x may be non-contiguous
         
         # Process through conformer layers
         features_list = []
