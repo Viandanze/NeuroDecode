@@ -92,14 +92,12 @@ flowchart LR
 NeuroDecode/
 ├── src/                          # Core package
 │   ├── config.py                 # Configuration management (YAML + defaults)
-│   ├── data/                      # Data loading and preprocessing
+│   ├── data/                     # Data loading and preprocessing
 │   │   ├── loader.py             # PhysioNet dataset loader
 │   │   └── preprocessing.py      # EEG preprocessing pipeline
-│   ├── models/                    # ML models
+│   ├── models/                   # ML models
 │   │   ├── eegnet.py             # EEGNet v2 implementation
-│   │   ├── conformer.py          # Conformer model
-│   │   ├── tcn.py                # TCN model
-│   │   ├── ensemble.py           # Voting & Stacking ensemble
+│   │   ├── advanced.py           # ShallowConvNet + EEGConformer + TCN
 │   │   ├── csp.py                # CSP classifier
 │   │   └── riemann_mdm.py        # Riemannian MDM classifier
 │   ├── acquisition/              # Data acquisition (BrainFlow streaming)
@@ -110,40 +108,48 @@ NeuroDecode/
 │   │   └── real_decoder.py       # EEGNet-based real decoder with auto-architecture inference
 │   ├── training/                 # Training utilities
 │   │   ├── trainer.py            # Unified training loop
-│   │   └── augment.py            # Data augmentation (6 methods)
+│   │   ├── augment.py            # Data augmentation (6 methods)
+│   │   ├── ensemble.py           # Voting & Stacking ensembles
+│   │   └── transfer.py           # Transfer learning
 │   ├── inference/                # Real-time inference
 │   │   └── pipeline.py           # StreamingBuffer + RealTimePipeline
-│   ├── evaluation/               # Metrics
-│   │   └── metrics.py            # Comprehensive evaluation
-│   ├── intent/                    # Intent encoding
+│   ├── evaluation/               # Metrics & evaluation protocols
+│   │   ├── metrics.py            # Comprehensive evaluation metrics
+│   │   └── cross_subject.py      # Cross-subject evaluation module
+│   ├── intent/                   # Intent encoding
 │   │   ├── intent_encoder.py     # MI to cognitive mode mapping
 │   │   └── context_manager.py    # State machine + dialogue context
 │   ├── llm_bridge/               # LLM integration
-│   │   └── llm_client.py         # Ollama/API/Mock pluggable backend
-│   ├── feedback/                 # Visual feedback
-│   │   └── visual_feedback.py    # Flask+SSE real-time web UI
+│   │   ├── llm_client.py         # Ollama/API/Coze/Mock pluggable backend
+│   │   ├── async_bridge.py       # Non-blocking wrapper around sync LLM clients
+│   │   └── deepseek_scheduler.py  # Off-peak cost-aware model switching
+│   ├── feedback/                 # Feedback channels
+│   │   ├── visual_feedback.py    # Flask+SSE real-time web UI
+│   │   ├── audio_feedback.py     # Audio cues for interaction events
+│   │   └── templates/            # Dashboard HTML
 │   └── utils/                    # Utilities
 │       └── config.py             # Configuration management
-├── tests/                       # Unit tests
-│   ├── test_intent_encoder.py   # Intent encoder tests
-│   ├── test_context_manager.py  # Context manager tests
-│   ├── test_llm_client.py       # LLM client tests
-│   ├── test_config.py           # Config module tests
-│   ├── test_eeg_stream_manager.py  # EEG stream manager tests
-│   └── test_decoders.py         # Decoder module tests
+├── tests/                        # 239 tests across 10 test modules
 ├── scripts/                      # Executable scripts
-│   ├── realtime_demo.py          # Real-time pipeline demo - mock stream or trained model
-│   ├── collaborative_reasoning_demo.py  # BCI×LLM collaborative demo│   ├── train_eegnet.py           # EEGNet training (with anti-collapse measures)
-│   ├── train_ensemble.py         # Ensemble training
+│   ├── benchmark_lr.py           # Standard 2-class MI benchmark (runs 4/8/12 recipe)
+│   ├── download_eegbci.py        # PhysioNet S3 mirror downloader (atomic .part rename)
+│   ├── train_eegnet.py           # EEGNet training (with anti-collapse measures)
 │   ├── train_csp.py              # CSP training
-│   ├── train_riemann.py          # Riemannian training
+│   ├── train_riemann.py          # Riemannian MDM training
+│   ├── train_advanced.py         # ShallowConvNet / EEGConformer / TCN training
+│   ├── train_ensemble.py         # Ensemble training
+│   ├── tune_eegnet.py            # Hyperparameter tuning
 │   ├── compare_models.py         # Model comparison
-│   └── tune_eegnet.py            # Hyperparameter tuning
-├── visualizations/               # Charts (CN + EN)
+│   ├── transfer_learn.py         # Transfer learning experiments
+│   ├── realtime_demo.py          # Real-time pipeline demo - mock stream or trained model
+│   ├── bench_feedback.py         # Feedback-path performance benchmark
+│   ├── visualize_results.py     # Result charts
+│   └── collaborative_reasoning_demo.py  # BCI x LLM collaborative demo
+├── visualizations/               # Charts (EN)
 ├── configs/                      # Configuration files
 │   ├── default.yaml              # Default training configuration
 │   └── demo.yaml                 # Collaborative reasoning runtime config
-├── outputs/                      # Results and checkpoints
+├── outputs/                      # Results and checkpoints (git-ignored)
 ├── README.md                     # This file
 └── requirements.txt              # Python dependencies
 ```
@@ -168,9 +174,6 @@ pip install scikit-learn>=1.0.0
 
 # Install pyRiemann (for Riemannian classifiers)
 pip install pyriemann>=0.3.0
-
-# Install Braindecode (optional, for additional models)
-pip install braindecode>=0.8.0
 
 # Install other utilities
 pip install pyyaml matplotlib tqdm
